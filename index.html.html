@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Send Feedback Survey</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;font-family:"Segoe UI",Roboto,Arial,sans-serif;}
+  body{background:#000;color:#fff;min-height:100vh;display:flex;justify-content:center;}
+  .card{width:100%;max-width:480px;padding:28px 22px 50px;}
+  header{display:flex;justify-content:space-between;align-items:center;margin-bottom:34px;}
+  .logo-mark{font-size:34px;color:#cfcfcf;font-weight:700;letter-spacing:-2px;}
+  .logo-sub{font-size:8px;letter-spacing:3px;color:#bdbdbd;margin-top:4px;}
+  .logo-right{font-size:26px;font-weight:700;color:#fff;}
+  h1{font-size:20px;margin-bottom:6px;}
+  p.sub{color:#9e9e9e;font-size:13px;margin-bottom:26px;}
+  label{display:block;font-size:14px;font-weight:600;margin:18px 0 6px;}
+  input,select{
+    width:100%;padding:14px;border-radius:6px;border:1px solid #777;
+    background:#0b0b0b;color:#fff;font-size:16px;
+  }
+  input::placeholder{color:#777;}
+  .btn{
+    width:100%;margin-top:32px;padding:16px;border:none;border-radius:8px;
+    background:#25d366;color:#fff;font-size:17px;font-weight:700;cursor:pointer;
+  }
+  .btn:active{transform:scale(.98);}
+  .btn.sms{background:#1976d2;margin-top:14px;}
+  .err{color:#ff6b6b;font-size:13px;margin-top:10px;min-height:18px;}
+</style>
+</head>
+<body>
+<div class="card">
+  <header>
+    <div>
+      <div class="logo-mark">&#9698;&#9700;</div>
+      <div class="logo-sub">SPORT UTILITY VEHICLES</div>
+    </div>
+    <div class="logo-right">mah&iacute;ndra</div>
+  </header>
+
+  <h1>Send Feedback Survey</h1>
+  <p class="sub">Enter customer details and tap Send. The survey link will open in WhatsApp, ready to send.</p>
+
+  <label>Vehicle Model</label>
+  <select id="model">
+    <option value="">Select model</option>
+    <option>XUV400</option><option>XUV700</option><option>XUV 3XO</option>
+    <option>Scorpio-N</option><option>Scorpio Classic</option><option>Thar</option>
+    <option>Thar ROXX</option><option>Bolero</option><option>Bolero Neo</option>
+    <option>Marazzo</option><option>BE 6</option><option>XEV 9e</option>
+  </select>
+
+  <label>Vehicle Number</label>
+  <input id="veh" placeholder="e.g. AP39 AB 1234" style="text-transform:uppercase">
+
+  <label>Customer Mobile Number</label>
+  <input id="mob" placeholder="10-digit mobile number" inputmode="numeric" maxlength="10">
+
+  <button class="btn" id="sendWA">Send via WhatsApp</button>
+  <button class="btn sms" id="sendSMS">Send via SMS</button>
+  <div class="err" id="err"></div>
+</div>
+
+<script>
+/* ============ CONFIG — EDIT THIS ============ */
+// Full public URL where feedback_survey.html is hosted:
+const SURVEY_URL = "https://YOUR-SITE-HERE/feedback_survey.html";
+const DEALER_NAME = "Unnati Motors";
+/* ============================================ */
+
+function buildMessage(){
+  const model = document.getElementById("model").value;
+  const veh = document.getElementById("veh").value.trim().toUpperCase();
+  const mob = document.getElementById("mob").value.trim();
+  const err = document.getElementById("err");
+  err.textContent = "";
+  if(!model){err.textContent="Please select the vehicle model.";return null;}
+  if(!veh){err.textContent="Please enter the vehicle number.";return null;}
+  if(!/^[6-9]\d{9}$/.test(mob)){err.textContent="Please enter a valid 10-digit mobile number.";return null;}
+  const link = SURVEY_URL + "?model=" + encodeURIComponent(model) + "&veh=" + encodeURIComponent(veh);
+  const text =
+    "Dear Customer, thank you for servicing your Mahindra " + model + " (" + veh + ") with " + DEALER_NAME + ".\n\n" +
+    "Please spare 1 minute to share your feedback:\n" + link + "\n\n" +
+    "If anything was not up to your expectations, we will resolve it immediately.";
+  return {mob, text};
+}
+
+document.getElementById("sendWA").onclick = () => {
+  const m = buildMessage();
+  if(m) window.open("https://wa.me/91" + m.mob + "?text=" + encodeURIComponent(m.text), "_blank");
+};
+
+document.getElementById("sendSMS").onclick = () => {
+  const m = buildMessage();
+  if(!m) return;
+  // sms: works on mobile phones. iPhone uses "&body=", Android uses "?body="
+  const sep = /iPhone|iPad|Mac/i.test(navigator.userAgent) ? "&" : "?";
+  window.location.href = "sms:+91" + m.mob + sep + "body=" + encodeURIComponent(m.text);
+};
+</script>
+</body>
+</html>
