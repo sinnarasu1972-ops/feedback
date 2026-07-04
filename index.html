@@ -3,100 +3,196 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Send Feedback Survey</title>
+<title>Customer Feedback Survey</title>
 <style>
+  :root{
+    --bg:#000;--text:#fff;--red:#e02b2b;--amber:#f5b711;
+    --green-light:#4caf50;--green:#43a047;--good:#66d95c;
+    --fair:#e6d02a;--poor:#f08a8a;--unacc:#ef1f3d;
+  }
   *{box-sizing:border-box;margin:0;padding:0;font-family:"Segoe UI",Roboto,Arial,sans-serif;}
-  body{background:#000;color:#fff;min-height:100vh;display:flex;justify-content:center;}
-  .card{width:100%;max-width:480px;padding:28px 22px 50px;}
-  header{display:flex;justify-content:space-between;align-items:center;margin-bottom:34px;}
-  .logo-mark{font-size:34px;color:#cfcfcf;font-weight:700;letter-spacing:-2px;}
-  .logo-sub{font-size:8px;letter-spacing:3px;color:#bdbdbd;margin-top:4px;}
-  .logo-right{font-size:26px;font-weight:700;color:#fff;}
-  h1{font-size:20px;margin-bottom:6px;}
-  p.sub{color:#9e9e9e;font-size:13px;margin-bottom:26px;}
-  label{display:block;font-size:14px;font-weight:600;margin:18px 0 6px;}
-  input,select{
-    width:100%;padding:14px;border-radius:6px;border:1px solid #777;
-    background:#0b0b0b;color:#fff;font-size:16px;
+  body{background:var(--bg);color:var(--text);min-height:100vh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px 20px 60px;}
+  header{display:flex;justify-content:space-between;align-items:center;padding:10px 0 40px;flex-wrap:wrap;gap:16px;}
+  .logo-mark{font-size:44px;line-height:1;letter-spacing:-2px;color:#cfcfcf;font-weight:700;}
+  .logo-sub{font-size:9px;letter-spacing:4px;color:#bdbdbd;margin-top:6px;}
+  .logo-right{font-size:38px;font-weight:700;letter-spacing:1px;color:#fff;}
+  .screen{display:none;animation:fade .25s ease;}
+  .screen.active{display:block;}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .question{font-size:20px;font-weight:700;margin-bottom:8px;line-height:1.4;}
+  .scale-labels{display:flex;justify-content:space-between;font-size:14px;margin-bottom:10px;}
+  .nps{display:flex;flex-wrap:wrap;gap:8px;}
+  .nps button{flex:1 1 70px;min-width:56px;height:64px;border:none;border-radius:8px;
+    font-size:18px;font-weight:700;color:#fff;cursor:pointer;transition:transform .1s;}
+  .nps button:active{transform:scale(.96);}
+  .nps button.selected{outline:3px solid #4da3ff;box-shadow:0 0 12px rgba(255,255,255,.4);}
+  .exp{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px;}
+  .exp button{flex:1 1 150px;min-width:130px;padding:18px 10px;border:none;border-radius:8px;
+    font-size:17px;font-weight:600;color:#111;cursor:pointer;transition:transform .1s;}
+  .exp button:active{transform:scale(.97);}
+  .exp button.selected{outline:3px solid #4da3ff;box-shadow:0 0 14px rgba(255,255,255,.5);}
+  .exp-msg{margin-top:18px;font-size:16px;font-weight:600;min-height:24px;}
+  textarea{width:100%;min-height:110px;margin-top:20px;padding:14px;border-radius:4px;
+    border:1px solid #fff;background:#000;color:#fff;font-size:15px;resize:vertical;}
+  textarea::placeholder{color:#8a8a8a;}
+  .nav{display:flex;justify-content:space-between;margin-top:48px;gap:12px;}
+  .nav .spacer{flex:1;}
+  .btn{background:#0b0b0b;border:1px solid #bdbdbd;color:#fff;border-radius:6px;
+    padding:16px 46px;font-size:17px;cursor:pointer;}
+  .btn:hover{background:#1c1c1c;}
+  .btn:disabled{opacity:.4;cursor:not-allowed;}
+  .thanks{text-align:center;padding:70px 10px;}
+  .thanks h1{font-size:34px;margin-bottom:10px;}
+  .thanks p{color:#cfcfcf;font-size:16px;}
+  .sending{color:#9e9e9e;font-size:14px;margin-top:14px;min-height:18px;}
+  @media(max-width:600px){
+    .logo-mark{font-size:32px;}
+    .logo-right{font-size:26px;}
+    .question{font-size:17px;}
+    .nps button{flex:1 1 26%;height:54px;font-size:16px;}
+    .btn{padding:14px 32px;font-size:16px;flex:1;}
+    .nav{margin-top:36px;}
   }
-  input::placeholder{color:#777;}
-  .btn{
-    width:100%;margin-top:32px;padding:16px;border:none;border-radius:8px;
-    background:#25d366;color:#fff;font-size:17px;font-weight:700;cursor:pointer;
-  }
-  .btn:active{transform:scale(.98);}
-  .btn.sms{background:#1976d2;margin-top:14px;}
-  .err{color:#ff6b6b;font-size:13px;margin-top:10px;min-height:18px;}
 </style>
 </head>
 <body>
-<div class="card">
+<div class="wrap">
+
   <header>
+    <!-- Replace with your own logo images if available -->
     <div>
       <div class="logo-mark">&#9698;&#9700;</div>
-      <div class="logo-sub">SPORT UTILITY VEHICLES</div>
+      <div class="logo-sub">SPORT&nbsp;UTILITY&nbsp;VEHICLES</div>
     </div>
     <div class="logo-right">mah&iacute;ndra</div>
   </header>
 
-  <h1>Send Feedback Survey</h1>
-  <p class="sub">Enter customer details and tap Send. The survey link will open in WhatsApp, ready to send.</p>
+  <!-- SCREEN 1 : NPS -->
+  <section class="screen active" id="s1">
+    <div class="question" id="q1">How likely are you to recommend your Mahindra vehicle to others?</div>
+    <div class="scale-labels"><span>Not at all likely</span><span>Extremely likely</span></div>
+    <div class="nps" id="nps"></div>
+    <div class="nav"><span class="spacer"></span><button class="btn" id="next1" disabled>Next</button></div>
+  </section>
 
-  <label>Vehicle Model</label>
-  <select id="model">
-    <option value="">Select model</option>
-    <option>XUV400</option><option>XUV700</option><option>XUV 3XO</option>
-    <option>Scorpio-N</option><option>Scorpio Classic</option><option>Thar</option>
-    <option>Thar ROXX</option><option>Bolero</option><option>Bolero Neo</option>
-    <option>Marazzo</option><option>BE 6</option><option>XEV 9e</option>
-  </select>
+  <!-- SCREEN 2 : Experience -->
+  <section class="screen" id="s2">
+    <div class="question" id="q2"></div>
+    <div class="exp">
+      <button data-v="Excellent" style="background:var(--green-light)">Excellent</button>
+      <button data-v="Good" style="background:var(--good)">Good</button>
+      <button data-v="Fair" style="background:var(--fair)">Fair</button>
+      <button data-v="Poor" style="background:var(--poor)">Poor</button>
+      <button data-v="Unacceptable" style="background:var(--unacc);color:#fff">Unacceptable</button>
+    </div>
+    <div class="exp-msg" id="expMsg"></div>
+    <div class="nav"><button class="btn back">Back</button><button class="btn" id="next2" disabled>Next</button></div>
+  </section>
 
-  <label>Vehicle Number</label>
-  <input id="veh" placeholder="e.g. AP39 AB 1234" style="text-transform:uppercase">
+  <!-- SCREEN 3 : Comments -->
+  <section class="screen" id="s3">
+    <div class="question">Would you like to share any thing more about your experience ?</div>
+    <textarea id="comment" placeholder="Answer Here"></textarea>
+    <div class="nav"><button class="btn back">Back</button><button class="btn" id="submitBtn">Submit</button></div>
+    <div class="sending" id="sending"></div>
+  </section>
 
-  <label>Customer Mobile Number</label>
-  <input id="mob" placeholder="10-digit mobile number" inputmode="numeric" maxlength="10">
+  <!-- SCREEN 4 : Thank you -->
+  <section class="screen" id="s4">
+    <div class="thanks">
+      <h1>Thank You</h1>
+      <p>For Experiencing Mahindra</p>
+      <p style="margin-top:14px">Your feedback has been recorded. Our team will reach out if needed.</p>
+    </div>
+  </section>
 
-  <button class="btn" id="sendWA">Send via WhatsApp</button>
-  <button class="btn sms" id="sendSMS">Send via SMS</button>
-  <div class="err" id="err"></div>
 </div>
 
 <script>
-/* ============ CONFIG — EDIT THIS ============ */
-// Full public URL where feedback_survey.html is hosted:
-const SURVEY_URL = "https://YOUR-SITE-HERE/feedback_survey.html";
-const DEALER_NAME = "Unnati Motors";
-/* ============================================ */
+/* ================= CONFIG — EDIT THIS ================= */
+const CONFIG = {
+  feedbackEmail: "rnaidu@mlplgroup.com",   // where every feedback is emailed
+  dealerName: "UNNATI MOTORS, A DIVISION OF MICROPARK LOGISTICS PRIVATE LIMITED"
+};
+/* ====================================================== */
 
-function buildMessage(){
-  const model = document.getElementById("model").value;
-  const veh = document.getElementById("veh").value.trim().toUpperCase();
-  const mob = document.getElementById("mob").value.trim();
-  const err = document.getElementById("err");
-  err.textContent = "";
-  if(!model){err.textContent="Please select the vehicle model.";return null;}
-  if(!veh){err.textContent="Please enter the vehicle number.";return null;}
-  if(!/^[6-9]\d{9}$/.test(mob)){err.textContent="Please enter a valid 10-digit mobile number.";return null;}
-  const link = SURVEY_URL + "?model=" + encodeURIComponent(model) + "&veh=" + encodeURIComponent(veh);
-  const text =
-    "Dear Customer, thank you for servicing your Mahindra " + model + " (" + veh + ") with " + DEALER_NAME + ".\n\n" +
-    "Please spare 1 minute to share your feedback:\n" + link + "\n\n" +
-    "If anything was not up to your expectations, we will resolve it immediately.";
-  return {mob, text};
+const params = new URLSearchParams(location.search);
+const model = params.get("model") || "";
+const veh   = params.get("veh")   || "";
+
+document.getElementById("q1").textContent =
+  "How likely are you to recommend your " +
+  (model ? "Mahindra " + model : "Mahindra vehicle") +
+  (veh ? " (" + veh + ")" : "") + " to others?";
+document.getElementById("q2").textContent =
+  "How was your service experience at " + CONFIG.dealerName;
+
+/* NPS 0-10 */
+const npsWrap = document.getElementById("nps");
+let npsScore = null, expChoice = null;
+for (let i = 0; i <= 10; i++) {
+  const b = document.createElement("button");
+  b.textContent = i;
+  b.style.background = i<=6 ? "var(--red)" : i<=8 ? "var(--amber)" : i===9 ? "var(--green-light)" : "var(--green)";
+  b.onclick = () => {
+    npsScore = i;
+    npsWrap.querySelectorAll("button").forEach(x=>x.classList.remove("selected"));
+    b.classList.add("selected");
+    document.getElementById("next1").disabled = false;
+  };
+  npsWrap.appendChild(b);
 }
 
-document.getElementById("sendWA").onclick = () => {
-  const m = buildMessage();
-  if(m) window.open("https://wa.me/91" + m.mob + "?text=" + encodeURIComponent(m.text), "_blank");
+/* Experience */
+const msgs = {
+  "Excellent":"We are thrilled to know that you had an excellent experience with us.",
+  "Good":"Thank you! We're glad you had a good experience with us.",
+  "Fair":"Thank you for your feedback. We will work to make your next visit better.",
+  "Poor":"We are sorry to hear that. Our Service Manager will contact you shortly.",
+  "Unacceptable":"We sincerely apologize. Our Service Manager will call you immediately to resolve this."
 };
+document.querySelectorAll(".exp button").forEach(b=>{
+  b.onclick=()=>{
+    expChoice=b.dataset.v;
+    document.querySelectorAll(".exp button").forEach(x=>x.classList.remove("selected"));
+    b.classList.add("selected");
+    document.getElementById("expMsg").textContent=msgs[expChoice];
+    document.getElementById("next2").disabled=false;
+  };
+});
 
-document.getElementById("sendSMS").onclick = () => {
-  const m = buildMessage();
-  if(!m) return;
-  // sms: works on mobile phones. iPhone uses "&body=", Android uses "?body="
-  const sep = /iPhone|iPad|Mac/i.test(navigator.userAgent) ? "&" : "?";
-  window.location.href = "sms:+91" + m.mob + sep + "body=" + encodeURIComponent(m.text);
+/* Navigation */
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id).classList.add("active");window.scrollTo(0,0);}
+document.getElementById("next1").onclick=()=>show("s2");
+document.getElementById("next2").onclick=()=>show("s3");
+document.querySelectorAll(".back").forEach((b,i)=>{b.onclick=()=>show(i===0?"s1":"s2");});
+
+/* Submit -> email via FormSubmit */
+document.getElementById("submitBtn").onclick = async () => {
+  const btn = document.getElementById("submitBtn");
+  const comment = document.getElementById("comment").value.trim();
+  const flag = (npsScore!==null && npsScore<=7) || ["Fair","Poor","Unacceptable"].includes(expChoice);
+  const now = new Date().toLocaleString("en-IN");
+  btn.disabled = true;
+  document.getElementById("sending").textContent = "Submitting...";
+  try{
+    await fetch("https://formsubmit.co/ajax/" + CONFIG.feedbackEmail, {
+      method:"POST",
+      headers:{ "Content-Type":"application/json", "Accept":"application/json" },
+      body: JSON.stringify({
+        _subject: (flag ? "\u26A0\uFE0F ATTENTION NEEDED - " : "") + "Service Feedback - " + (veh || "Vehicle") + " - " + now,
+        "Date & Time": now,
+        "Vehicle Model": model || "-",
+        "Vehicle Number": veh || "-",
+        "Recommend Score (0-10)": npsScore,
+        "Service Experience": expChoice,
+        "Comments": comment || "-",
+        "Action Required": flag ? "YES - contact customer immediately" : "No"
+      })
+    });
+  }catch(e){ /* still thank the customer; do not block them */ }
+  show("s4");
 };
 </script>
 </body>
